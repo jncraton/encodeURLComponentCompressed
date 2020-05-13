@@ -1,20 +1,24 @@
 from collections import Counter
 import csv
 
-def get_prefix_code(num,cutoff=60):
-    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890?/:@-._~!$&'()*+,;="
-
-    if (num < cutoff):
-        return chars[num]
-    else:
-        num1 = int(num / len(chars))
-        byte1 = chars[60 + num1]
-        num2 = num % len(chars)
-        byte2 = chars[num2] 
-        return byte1 + byte2
+class PrefixCoder:
+    def __init__(self, cutoff=60, chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890?/:@-._~!$&'()*+,;="):
+        self.cutoff = cutoff
+        self.chars = chars
+        
+    def get_code(self, num):
+        if (num < self.cutoff):
+            return self.chars[num]
+        else:
+            num1 = int(num / len(self.chars))
+            byte1 = self.chars[60 + num1]
+            num2 = num % len(self.chars)
+            byte2 = self.chars[num2] 
+            return byte1 + byte2
 
 with open('gsl.txt') as f:
     ngrams = Counter()
+    pc = PrefixCoder()
 
     for row in csv.reader(f, delimiter=' '):
         count = int(row[1])
@@ -24,4 +28,4 @@ with open('gsl.txt') as f:
                 ngrams[ngram] += count
 
     for i, ngram in enumerate(ngrams.most_common(100)):
-        print(i, get_prefix_code(i), ngram[0])
+        print(i, pc.get_code(i), ngram[0])
