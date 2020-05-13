@@ -16,6 +16,9 @@ class PrefixCoder:
             byte2 = self.chars[num2] 
             return byte1 + byte2
 
+    def get_max(self):
+        return (len(self.chars) - self.cutoff) * len(self.chars)
+
 with open('gsl.txt') as f:
     ngrams = Counter()
     pc = PrefixCoder()
@@ -27,5 +30,5 @@ with open('gsl.txt') as f:
             for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
                 ngrams[ngram] += count
 
-    for i, ngram in enumerate(ngrams.most_common(100)):
+    for i, ngram in enumerate(ngrams.most_common(pc.get_max())):
         print(i, pc.get_code(i), ngram[0])
