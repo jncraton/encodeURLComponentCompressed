@@ -11,7 +11,7 @@ class PrefixCoder:
             return self.chars[num]
         else:
             num1 = int(num / len(self.chars))
-            byte1 = self.chars[60 + num1]
+            byte1 = self.chars[self.cutoff + num1]
             num2 = num % len(self.chars)
             byte2 = self.chars[num2] 
             return byte1 + byte2
