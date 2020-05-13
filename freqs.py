@@ -1,21 +1,27 @@
 from collections import Counter
+import csv
 
-with open('words.txt') as f:
-    words = f.read().replace('\n',' ')
-    
+def get_prefix_code(num,cutoff=60):
+    chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890?/:@-._~!$&'()*+,;="
+
+    if (num < cutoff):
+        return chars[num]
+    else:
+        num1 = int(num / len(chars))
+        byte1 = chars[60 + num1]
+        num2 = num % len(chars)
+        byte2 = chars[num2] 
+        return byte1 + byte2
+
+with open('gsl.txt') as f:
     ngrams = Counter()
 
-    for n in [1,2,3,4]:
-        ngrams.update([words[i:i+n] for i in range(len(words)-n+1) if not ' ' in words[i:i+n]])
+    for row in csv.reader(f, delimiter=' '):
+        count = int(row[1])
+        word = f' {row[2]} '
+        for n in [1,2,3,4,5,6,7]:
+            for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
+                ngrams[ngram] += count
 
-    print(ngrams.most_common(54+27*81-256))
-    print(54+27*81-256)
-
-"""
-Format
-
-trit 1
-    0 - Lower 1 byte sequence
-    1 - Upper 1 byte sequence
-    2 - 2 Bytes sequence
-"""
+    for i, ngram in enumerate(ngrams.most_common(100)):
+        print(i, get_prefix_code(i), ngram[0])
