@@ -35,8 +35,10 @@ with open('gsl.txt') as f:
                 if ngram != word:
                     ngrams[ngram] += count
 
-    ngram_list = ['.',',','!','?']
+    ngram_list = ['.',',','!','?',' ','  ','    ']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
+
+    ngram_list = [quote(ng) for ng in ngram_list]
 
     # Add all URL encoded byte values
     for i in range(128):
@@ -55,8 +57,6 @@ with open('gsl.txt') as f:
 
 with open('pride-and-prejudice.txt') as f:
     text = f.read()
-    print(len(text), len(quote(text)))
-
     quoted = quote(text)
 
     i = 0
@@ -70,4 +70,5 @@ with open('pride-and-prejudice.txt') as f:
         else:
             raise ValueError("Invalid character at position " + i)
 
-print(len(output))
+print(f'{len(output) / len(text):.0%} the size of plain text')
+print(f'{len(output) / len(quoted):.0%} the size of URL encoded text')
