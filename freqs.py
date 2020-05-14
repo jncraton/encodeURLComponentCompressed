@@ -78,7 +78,7 @@ def decode(text):
     i = 0
     output = ""
     while i < len(text):
-        for j in range(2,0,-1):
+        for j in range(1,3):
             if text[i:i+j] in decmap:
                 output += decmap[text[i:i+j]]
                 i += j
@@ -95,9 +95,6 @@ with open('pride-and-prejudice.txt') as f:
         f.write(text)
 
     decoded = decode(compressed)
-
-    print(len(text))
-    print(len(decode(compressed)))
 
     errors = 0
     for i in range(len(text)):
