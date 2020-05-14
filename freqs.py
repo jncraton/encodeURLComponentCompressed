@@ -26,7 +26,7 @@ with open('gsl.txt') as f:
 
     for row in csv.reader(f, delimiter=' '):
         count = int(row[1])
-        word = f' {row[2]} '
+        word = f' {row[2]}'
         for n in [1,2,3,4,5,6,7]:
             for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
                 ngrams[ngram] += count
