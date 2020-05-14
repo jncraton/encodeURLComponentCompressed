@@ -1,5 +1,5 @@
 from collections import Counter
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 import csv
 
 class PrefixCoder:
@@ -67,10 +67,30 @@ def encode(text):
                 i += j
                 break
         else:
-            raise ValueError("Invalid character at position " + i)
+            raise ValueError(f"Invalid character at position {i}")
 
     print(f'{len(output) / len(text):.0%} the size of plain text')
     print(f'{len(output) / len(quoted):.0%} the size of URL encoded text')
 
+    return output
+
+def decode(text):
+    i = 0
+    output = ""
+    while i < len(text):
+        for j in range(10,0,-1):
+            if text[i:i+j] in decmap:
+                output += decmap[text[i:i+j]]
+                i += j
+                break
+        else:
+            raise ValueError(f"Invalid character at position {i}")
+
+    return unquote(output)
+
 with open('pride-and-prejudice.txt') as f:
-    encode(f.read())
+    text = f.read()
+    compressed = encode(text)
+    with open('out.txt', 'w') as f:
+        f.write(text)
+    assert(text == decode(compressed))
