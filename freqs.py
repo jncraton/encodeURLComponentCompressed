@@ -35,7 +35,7 @@ with open('gsl.txt') as f:
                 if ngram != word:
                     ngrams[ngram] += count
 
-    ngram_list = ['.',',','!','?',' ','  ','    ']
+    ngram_list = ['.',',','!','?',' ']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     ngram_list = [quote(ng) for ng in ngram_list]
