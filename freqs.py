@@ -40,6 +40,9 @@ with open('gsl.txt') as f:
     ngram_list = ['.',',']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
+    # Remove 2 character ngrams encoded in two characters
+    ngram_list = [ng for (i,ng) in enumerate(ngram_list) if i < pc.cutoff or len(ng) != 2]
+
     ngram_list = [quote(ng) for ng in ngram_list]
 
     # Add all URL encoded byte values
@@ -51,9 +54,6 @@ with open('gsl.txt') as f:
 
     # Remove duplicates
     ngram_list = list(OrderedDict.fromkeys(ngram_list))
-
-    # Remove 2 character ngrams encoded in two characters
-    ngram_list = [ng for (i,ng) in enumerate(ngram_list) if i < pc.cutoff or len(ng) != 2]
 
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
