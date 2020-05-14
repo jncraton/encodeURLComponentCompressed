@@ -26,14 +26,15 @@ with open('gsl.txt') as f:
     ngrams = Counter()
     pc = PrefixCoder()
 
-    for row in csv.reader(f, delimiter=' '):
+    for (i,row) in enumerate(csv.reader(f, delimiter=' ')):
         count = int(row[1])
         word = f' {row[2]}'
         ngrams[word] += count
         for n in [1,2,3,4,5,6,7,8,9,10]:
-            for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
-                if ngram != word:
-                    ngrams[ngram] += count
+            if i > 1000 or n <= 2:
+                for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
+                    if ngram != word:
+                        ngrams[ngram] += count
 
     ngram_list = ['.',',','!','?']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
