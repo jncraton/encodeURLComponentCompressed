@@ -37,7 +37,7 @@ with open('gsl.txt') as f:
                     if ngram != word:
                         ngrams[ngram] += count
 
-    ngram_list = ['.',',']
+    ngram_list = ['.',',','( ']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     # Remove 2 character ngrams encoded in two characters
@@ -65,7 +65,22 @@ def preprocess(text):
         return m.group(0).swapcase()
 
     p = re.compile('(^|\. +|\n)([A-Za-z])')
-    return p.sub(swap_sentence_case, text)
+    text = p.sub(swap_sentence_case, text)
+
+    text = text.replace('(', '( ')
+
+    return text
+
+def postprocess(text):
+    def swap_sentence_case(m):
+        return m.group(0).swapcase()
+
+    p = re.compile('(^|\. +|\n)([A-Za-z])')
+    text = p.sub(swap_sentence_case, text)
+
+    text = text.replace('( ', '(')
+
+    return text
 
 def encode(text):
     quoted = quote(preprocess(text))
@@ -98,7 +113,7 @@ def decode(text):
         else:
             raise ValueError(f"Invalid character at position {i}")
 
-    return preprocess(unquote(output))
+    return postprocess(unquote(output))
 
 with open('info-theory.txt') as f:
     text = f.read()
