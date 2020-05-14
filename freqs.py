@@ -1,4 +1,5 @@
 from collections import Counter
+from urllib.parse import quote
 import csv
 
 class PrefixCoder:
@@ -30,5 +31,21 @@ with open('gsl.txt') as f:
             for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
                 ngrams[ngram] += count
 
-    for i, ngram in enumerate(ngrams.most_common(pc.get_max())):
-        print(i, pc.get_code(i), ngram[0])
+    ngram_list = ['. ',', ','! ','? ']
+    ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
+
+    # Add all URL encoded byte values
+    for i in range(128):
+        text = quote(chr(i))
+        if not text in ngram_list:
+            ngram_list.insert(pc.cutoff, text)
+
+    for i in range(128,256):
+        text = '%' + hex(i)[-2:].upper()
+        if not text in ngram_list:
+            ngram_list.insert(pc.cutoff, text)        
+
+    for i, ngram in enumerate(ngram_list[:pc.get_max()]):
+        print(i, pc.get_code(i), ngram)
+
+
