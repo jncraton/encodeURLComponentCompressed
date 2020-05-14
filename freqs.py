@@ -1,9 +1,9 @@
-from collections import Counter
+from collections import Counter, OrderedDict
 from urllib.parse import quote, unquote
 import csv
 
 class PrefixCoder:
-    def __init__(self, cutoff=60, chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789?/:@-._~!$&'()*+,;="):
+    def __init__(self, cutoff=77, chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789?/:@-._~!$&'()*+,;="):
         self.cutoff = cutoff
         self.chars = chars
         
@@ -42,18 +42,18 @@ with open('gsl.txt') as f:
 
     # Add all URL encoded byte values
     for i in range(128):
-        text = quote(chr(i))
-        if not text in ngram_list:
-            ngram_list.insert(pc.cutoff, text)
+        ngram_list.insert(pc.cutoff, quote(chr(i)))
 
     for i in range(128,256):
-        text = '%' + hex(i)[-2:].upper()
-        if not text in ngram_list:
-            ngram_list.insert(pc.cutoff, text)        
+        ngram_list.insert(pc.cutoff, '%' + hex(i)[-2:].upper())
+
+    # Remove duplicates
+    ngram_list = list(OrderedDict.fromkeys(ngram_list))
 
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
         encmap[ngram] = pc.get_code(i)
+        print(i, pc.get_code(i), ngram)
 
 def encode(text):
     quoted = quote(text)
@@ -67,7 +67,7 @@ def encode(text):
                 i += j
                 break
         else:
-            raise ValueError(f"Invalid character at position {i}")
+            raise ValueError(f"Invalid character {quoted[i:i+10]} position {i}")
 
     print(f'{len(output) / len(text):.2%} the size of plain text')
     print(f'{len(output) / len(quoted):.2%} the size of URL encoded text')
