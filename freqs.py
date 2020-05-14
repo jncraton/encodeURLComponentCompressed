@@ -92,9 +92,6 @@ def decode(text):
 with open('pride-and-prejudice.txt') as f:
     text = f.read()
     compressed = encode(text)
-    with open('out.txt', 'w') as f:
-        f.write(text)
-
     decoded = decode(compressed)
 
     errors = 0
