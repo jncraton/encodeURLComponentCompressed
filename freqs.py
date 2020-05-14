@@ -20,6 +20,8 @@ class PrefixCoder:
     def get_max(self):
         return (len(self.chars) - self.cutoff) * len(self.chars)
 
+encmap = {}
+decmap = {}
 with open('gsl.txt') as f:
     ngrams = Counter()
     pc = PrefixCoder()
@@ -27,11 +29,13 @@ with open('gsl.txt') as f:
     for row in csv.reader(f, delimiter=' '):
         count = int(row[1])
         word = f' {row[2]}'
+        ngrams[word] += count
         for n in [1,2,3,4,5,6,7,8,9,10]:
             for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
-                ngrams[ngram] += count
+                if ngram != word:
+                    ngrams[ngram] += count
 
-    ngram_list = ['. ',', ','! ','? ']
+    ngram_list = ['.',',','!','?']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     # Add all URL encoded byte values
@@ -45,9 +49,25 @@ with open('gsl.txt') as f:
         if not text in ngram_list:
             ngram_list.insert(pc.cutoff, text)        
 
-    print("let cmap = {")
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
-        print(f'  "{pc.get_code(i)}": "{ngram}",')
-    print("}")
+        decmap[pc.get_code(i)] = ngram
+        encmap[ngram] = pc.get_code(i)
 
+with open('pride-and-prejudice.txt') as f:
+    text = f.read()
+    print(len(text), len(quote(text)))
 
+    quoted = quote(text)
+
+    i = 0
+    output = ""
+    while i < len(quoted):
+        for j in range(10,0,-1):
+            if quoted[i:i+j] in encmap:
+                output += encmap[quoted[i:i+j]]
+                i += j
+                break
+        else:
+            raise ValueError("Invalid character at position " + i)
+
+print(len(output))
