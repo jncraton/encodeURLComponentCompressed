@@ -1,5 +1,6 @@
 from collections import Counter, OrderedDict
 from urllib.parse import quote, unquote
+import re
 import csv
 
 class PrefixCoder:
@@ -59,8 +60,15 @@ with open('gsl.txt') as f:
         encmap[ngram] = pc.get_code(i)
         #print(i, pc.get_code(i), ngram)
 
+def preprocess(text):
+    def swap_sentence_case(m):
+        return m.group(0).swapcase()
+
+    p = re.compile('(^|\. +|\n)([A-Za-z])')
+    return p.sub(swap_sentence_case, text)
+
 def encode(text):
-    quoted = quote(text)
+    quoted = quote(preprocess(text))
 
     i = 0
     output = ""
@@ -90,7 +98,7 @@ def decode(text):
         else:
             raise ValueError(f"Invalid character at position {i}")
 
-    return unquote(output)
+    return preprocess(unquote(output))
 
 with open('info-theory.txt') as f:
     text = f.read()
