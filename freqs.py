@@ -35,7 +35,7 @@ with open('gsl.txt') as f:
                 if ngram != word:
                     ngrams[ngram] += count
 
-    ngram_list = ['.',',','!','?',' ']
+    ngram_list = ['.',',','!','?']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     ngram_list = [quote(ng) for ng in ngram_list]
@@ -69,8 +69,8 @@ def encode(text):
         else:
             raise ValueError(f"Invalid character at position {i}")
 
-    print(f'{len(output) / len(text):.0%} the size of plain text')
-    print(f'{len(output) / len(quoted):.0%} the size of URL encoded text')
+    print(f'{len(output) / len(text):.2%} the size of plain text')
+    print(f'{len(output) / len(quoted):.2%} the size of URL encoded text')
 
     return output
 
