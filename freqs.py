@@ -55,8 +55,7 @@ with open('gsl.txt') as f:
         decmap[pc.get_code(i)] = ngram
         encmap[ngram] = pc.get_code(i)
 
-with open('pride-and-prejudice.txt') as f:
-    text = f.read()
+def encode(text):
     quoted = quote(text)
 
     i = 0
@@ -70,5 +69,8 @@ with open('pride-and-prejudice.txt') as f:
         else:
             raise ValueError("Invalid character at position " + i)
 
-print(f'{len(output) / len(text):.0%} the size of plain text')
-print(f'{len(output) / len(quoted):.0%} the size of URL encoded text')
+    print(f'{len(output) / len(text):.0%} the size of plain text')
+    print(f'{len(output) / len(quoted):.0%} the size of URL encoded text')
+
+with open('pride-and-prejudice.txt') as f:
+    encode(f.read())
