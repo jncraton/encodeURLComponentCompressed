@@ -3,7 +3,7 @@ from urllib.parse import quote, unquote
 import csv
 
 class PrefixCoder:
-    def __init__(self, cutoff=60, chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890?/:@-._~!$&'()*+,;="):
+    def __init__(self, cutoff=60, chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789?/:@-._~!$&'()*+,;="):
         self.cutoff = cutoff
         self.chars = chars
         
@@ -13,12 +13,12 @@ class PrefixCoder:
         else:
             num1 = int(num / len(self.chars))
             byte1 = self.chars[self.cutoff + num1]
-            num2 = num % len(self.chars)
+            num2 = (num - self.cutoff) % len(self.chars)
             byte2 = self.chars[num2] 
             return byte1 + byte2
 
     def get_max(self):
-        return (len(self.chars) - self.cutoff) * len(self.chars)
+        return self.cutoff + (len(self.chars) - self.cutoff - 1) * len(self.chars)
 
 encmap = {}
 decmap = {}
@@ -78,7 +78,7 @@ def decode(text):
     i = 0
     output = ""
     while i < len(text):
-        for j in range(10,0,-1):
+        for j in range(2,0,-1):
             if text[i:i+j] in decmap:
                 output += decmap[text[i:i+j]]
                 i += j
@@ -93,4 +93,16 @@ with open('pride-and-prejudice.txt') as f:
     compressed = encode(text)
     with open('out.txt', 'w') as f:
         f.write(text)
-    assert(text == decode(compressed))
+
+    decoded = decode(compressed)
+
+    print(len(text))
+    print(len(decode(compressed)))
+
+    errors = 0
+    for i in range(len(text)):
+        if text[i] != decoded[i]:
+            print(i, text[i-10:i+10], decoded[i-10:i+10])
+            errors += 1
+            if (errors > 10): exit(1)
+    assert(text == decoded)
