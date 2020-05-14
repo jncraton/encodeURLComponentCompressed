@@ -89,7 +89,7 @@ def decode(text):
 
     return unquote(output)
 
-with open('pride-and-prejudice.txt') as f:
+with open('info-theory.txt') as f:
     text = f.read()
     compressed = encode(text)
     decoded = decode(compressed)
