@@ -58,7 +58,7 @@ with open('gsl.txt') as f:
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
         encmap[ngram] = pc.get_code(i)
-        #print(i, pc.get_code(i), ngram)
+        #print(i, len(ngram) / len(pc.get_code(i)), pc.get_code(i), ngram)
 
 def preprocess(text):
     def swap_sentence_case(m):
