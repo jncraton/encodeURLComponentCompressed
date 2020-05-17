@@ -32,12 +32,12 @@ with open('gsl.txt') as f:
         word = f' {row[2]}'
         ngrams[word] += count
         for n in [1,2,3,4,5,6,7,8,9,10]:
-            if i > 1000 or n <= 2:
+            if i > 24 or n < 2:
                 for ngram in [word[i:i+n] for i in range(len(word)-n+1)]:
                     if ngram != word:
                         ngrams[ngram] += count
 
-    ngram_list = ['.',',','( ',')',"'",'"']
+    ngram_list = ['.',',','( ',')',"'",'"','!','?']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     # Remove 2 character ngrams encoded in two characters
@@ -55,6 +55,8 @@ with open('gsl.txt') as f:
     # Remove duplicates
     ngram_list = list(OrderedDict.fromkeys(ngram_list))
 
+    print(ngram_list[:pc.cutoff])
+
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
         encmap[ngram] = pc.get_code(i)
@@ -71,7 +73,7 @@ def preprocess(text):
     text = text.replace(' I ', ' i ')
     text = text.replace('"', '" ')
 
-    print(text)
+    #print(text)
 
     return text
 
@@ -125,7 +127,7 @@ def decode(text):
         else:
             raise ValueError(f"Invalid character at position {i}")
 
-    print(ngrams.most_common(100))
+    #print(ngrams.most_common(100))
 
     return postprocess(unquote(output))
 
