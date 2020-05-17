@@ -55,7 +55,11 @@ with open('gsl.txt') as f:
     # Remove duplicates
     ngram_list = list(OrderedDict.fromkeys(ngram_list))
 
-    print(ngram_list[:pc.cutoff])
+    ngram_list[:pc.cutoff] = sorted(ngram_list[:pc.cutoff], key=lambda n: len(n))
+
+    single_chars = [n for n in ngram_list[:pc.cutoff] if len(n) == 1]
+    current_chars = list(pc.chars)
+    new_chars = single_chars + [c for c in current_chars if c not in single_chars]
 
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
