@@ -1,4 +1,4 @@
-let encmap = {"er":",","re":"!","in":"'","on":"G","th":"H","st":"I","en":"J","or":"K","an":"L","se":"M","ea":"N","ar":"O","ou":"P","te":"Q","he":"R","al":"S","%2C":"T","%3F":"U","%27":"V","%29":"W","%22":"X","%21":"Y","%20":"Z","%20a":"j","%20s":"q","%20w":"x","%20c":"z","%20t":"?","%20m":"/","%20p":":","%20o":"@","%20f":"-","%20b":"_","%20be":"~","%20of":"$","%20to":"&","%20in":"(","%20he":")","%28%20":"*","%20the":"+","%20and":";",};
+let encmap = [["%20and","."],["%20the","e"],["%28%20","t"],["%20he","o"],["%20in","a"],["%20to","h"],["%20of","n"],["%20be","i"],["%20b","r"],["%20f","s"],["%20o","l"],["%20p","d"],["%20m","f"],["%20t","c"],["%20c","b"],["%20w","u"],["%20s","w"],["%20a","m"],["%20","y"],["%21","p"],["%22","g"],["%29","v"],["%27","k"],["%3F",","],["%2C","!"],["al","'"],["he","G"],["te","H"],["ou","I"],["ar","J"],["ea","K"],["se","L"],["an","M"],["or","N"],["en","O"],["st","P"],["th","Q"],["on","R"],["in","S"],["re","T"],["er","U"],["k","V"],["v","W"],["g","X"],["p","Y"],["y","Z"],["m","j"],["w","q"],["u","x"],["b","z"],["c","?"],["f","/"],["d",":"],["l","@"],["s","-"],["r","_"],["i","~"],["n","$"],["h","&"],["a","("],["o",")"],["t","*"],["e","+"],[".",";"],]
 
 function encode(text) {
   text = text.replace(/(^|[\.\!\?] +|\n)([A-Za-z])/g, (c) => {
@@ -6,7 +6,35 @@ function encode(text) {
               ? c.toLowerCase()
               : c.toUpperCase()
   })
-  return text
+
+  text = encodeURIComponent(text)
+
+  out = ""
+
+  i = 0
+  while (i < text.length) {
+    found = false
+    for (e of encmap) {
+      if (text.substring(i, i+10).startsWith(e[0])) {
+        out += e[1]
+        i += e[0].length
+        found = true
+        break
+      }
+    }
+    
+    if (!found) {
+      out+=text[i]
+      i+=1
+    }
+  }
+  
+  return out
 }
 
-console.log(encode("Hello, world! Let's make sure sentence casing works properly."))
+let test = "Hello, world! Let's make sure sentence casing works properly."
+
+console.log(test)
+console.log(encodeURIComponent(test))
+console.log(encodeURIComponent(test).replace(/%20/g,'+'))
+console.log(encode(test))

@@ -63,11 +63,11 @@ with open('gsl.txt') as f:
 def gen_js(filename=None):
     import sys
     out = sys.stdout
-    out.write('let encmap = {')
-    for i, ngram in enumerate(ngram_list[:pc.get_max()]):
+    out.write('let encmap = [')
+    for i, ngram in enumerate(reversed(ngram_list[:pc.get_max()])):
         if ngram != pc.get_code(i):
-            out.write(f'"{ngram}":"{pc.get_code(i)}",')
-    out.write('};\n')
+            out.write(f'["{ngram}","{pc.get_code(i)}"],')
+    out.write(']\n')
 
 gen_js()    
 
