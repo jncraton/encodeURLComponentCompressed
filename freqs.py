@@ -37,7 +37,7 @@ with open('gsl.txt') as f:
                     if ngram != word:
                         ngrams[ngram] += count
 
-    ngram_list = ['.',',','( ']
+    ngram_list = ['.',',','( ',')',"'",'"']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     # Remove 2 character ngrams encoded in two characters
@@ -68,6 +68,10 @@ def preprocess(text):
     text = p.sub(swap_sentence_case, text)
 
     text = text.replace('(', '( ')
+    text = text.replace(' I ', ' i ')
+    text = text.replace('"', '" ')
+
+    print(text)
 
     return text
 
@@ -78,7 +82,9 @@ def postprocess(text):
     p = re.compile('(^|\. +|\n)([A-Za-z])')
     text = p.sub(swap_sentence_case, text)
 
+    text = text.replace(' i ', ' I ')
     text = text.replace('( ', '(')
+    text = text.replace('" ', '"')
 
     return text
 
