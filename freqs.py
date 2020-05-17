@@ -2,6 +2,7 @@ from collections import Counter, OrderedDict
 from urllib.parse import quote, unquote
 import re
 import csv
+import codecs
 
 class PrefixCoder:
     def __init__(self, cutoff=77, chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789?/:@-._~!$&'()*+,;="):
@@ -25,7 +26,7 @@ encmap = {}
 decmap = {}
 with open('gsl.txt') as f:
     ngrams = Counter()
-    pc = PrefixCoder()
+    pc = PrefixCoder(chars="GHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz?/:@-._~!$&'()*+,;=", cutoff=64)
 
     for (i,row) in enumerate(csv.reader(f, delimiter=' ')):
         count = int(row[1])
@@ -45,13 +46,6 @@ with open('gsl.txt') as f:
 
     ngram_list = [quote(ng) for ng in ngram_list]
 
-    # Add all URL encoded byte values
-    for i in range(128):
-        ngram_list.insert(pc.cutoff, quote(chr(i)))
-
-    for i in range(128,256):
-        ngram_list.insert(pc.cutoff, '%' + hex(i)[-2:].upper())
-
     # Remove duplicates
     ngram_list = list(OrderedDict.fromkeys(ngram_list))
 
@@ -60,11 +54,11 @@ with open('gsl.txt') as f:
     single_chars = [n for n in ngram_list[:pc.cutoff] if len(n) == 1]
     current_chars = list(pc.chars)
     new_chars = single_chars + [c for c in current_chars if c not in single_chars]
-
+    pc.chars = ''.join(new_chars)
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
         encmap[ngram] = pc.get_code(i)
-        #print(i, len(ngram) / len(pc.get_code(i)), pc.get_code(i), ngram)
+        print(i, len(ngram) / len(pc.get_code(i)), pc.get_code(i), ngram)
 
 def preprocess(text):
     def swap_sentence_case(m):
@@ -100,13 +94,21 @@ def encode(text):
     i = 0
     output = ""
     while i < len(quoted):
+        m = re.match(r'%([A-F0-9][A-F0-9])', quoted[i:i+3])
+
         for j in range(10,0,-1):
             if quoted[i:i+j] in encmap:
                 output += encmap[quoted[i:i+j]]
                 i += j
                 break
         else:
-            raise ValueError(f"Invalid character {quoted[i:i+10]} position {i}")
+            if m:
+                output += m.group(1)
+                i += 3
+            else:
+                output += codecs.encode(quoted[i].encode('utf8'), 'hex').decode('utf8').upper()
+                i += 1
+            #raise ValueError(f"Invalid character {quoted[i:i+10]} position {i}")
 
     print(f'{len(output) / len(text):.2%} the size of plain text')
     print(f'{len(output) / len(quoted):.2%} the size of URL encoded text')
@@ -122,12 +124,19 @@ def decode(text):
         ngrams[k] -= 1
     
     while i < len(text):
-        for j in range(1,3):
-            if text[i:i+j] in decmap:
-                output += decmap[text[i:i+j]]
-                ngrams[decmap[text[i:i+j]]] += 1
-                i += j
-                break
+        m = re.match(r'[A-F0-9][A-F0-9]', text[i:i+2])
+
+        if text[i] in decmap:
+            output += decmap[text[i]]
+            ngrams[decmap[text[i]]] += 1
+            i += 1
+        elif text[i:i+2] in decmap:
+            output += decmap[text[i:i+2]]
+            ngrams[decmap[text[i:i+2]]] += 1
+            i += 2
+        elif m:
+            output += '%' + m.group(0)
+            i += 2
         else:
             raise ValueError(f"Invalid character at position {i}")
 
@@ -140,10 +149,12 @@ with open('info-theory.txt') as f:
     compressed = encode(text)
     decoded = decode(compressed)
 
+
+    print(compressed)
     errors = 0
     for i in range(len(text)):
         if text[i] != decoded[i]:
             print(i, text[i-10:i+10], decoded[i-10:i+10])
             errors += 1
-            if (errors > 10): exit(1)
+            if (errors > 2): exit(1)
     assert(text == decoded)
