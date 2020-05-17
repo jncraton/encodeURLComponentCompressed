@@ -26,7 +26,7 @@ encmap = {}
 decmap = {}
 with open('gsl.txt') as f:
     ngrams = Counter()
-    pc = PrefixCoder(chars="GHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz?/:@-._~!$&'()*+,;=", cutoff=64)
+    pc = PrefixCoder(chars=".,!'GHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz?/:@-_~$&()*+;=", cutoff=64)
 
     for (i,row) in enumerate(csv.reader(f, delimiter=' ')):
         count = int(row[1])
@@ -38,7 +38,7 @@ with open('gsl.txt') as f:
                     if ngram != word:
                         ngrams[ngram] += count
 
-    ngram_list = ['.',',','( ',')',"'",'"','!','?']
+    ngram_list = ['.',',','?',"'",'( ',')','"','!']
     ngram_list += [ng[0] for ng in ngrams.most_common(pc.get_max())]
 
     # Remove 2 character ngrams encoded in two characters
@@ -58,7 +58,18 @@ with open('gsl.txt') as f:
     for i, ngram in enumerate(ngram_list[:pc.get_max()]):
         decmap[pc.get_code(i)] = ngram
         encmap[ngram] = pc.get_code(i)
-        print(i, len(ngram) / len(pc.get_code(i)), pc.get_code(i), ngram)
+        #print(i, len(ngram) / len(pc.get_code(i)), pc.get_code(i), ngram)
+
+def gen_js(filename=None):
+    import sys
+    out = sys.stdout
+    out.write('let encmap = {')
+    for i, ngram in enumerate(ngram_list[:pc.get_max()]):
+        if ngram != pc.get_code(i):
+            out.write(f'"{ngram}":"{pc.get_code(i)}",')
+    out.write('};\n')
+
+gen_js()    
 
 def preprocess(text):
     def swap_sentence_case(m):
@@ -150,7 +161,6 @@ with open('info-theory.txt') as f:
     decoded = decode(compressed)
 
 
-    print(compressed)
     errors = 0
     for i in range(len(text)):
         if text[i] != decoded[i]:
