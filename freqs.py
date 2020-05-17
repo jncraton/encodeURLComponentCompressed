@@ -104,14 +104,22 @@ def encode(text):
 def decode(text):
     i = 0
     output = ""
+
+    ngrams = Counter(encmap.keys())
+    for k in ngrams.keys():
+        ngrams[k] -= 1
+    
     while i < len(text):
         for j in range(1,3):
             if text[i:i+j] in decmap:
                 output += decmap[text[i:i+j]]
+                ngrams[decmap[text[i:i+j]]] += 1
                 i += j
                 break
         else:
             raise ValueError(f"Invalid character at position {i}")
+
+    print(ngrams.most_common(100))
 
     return postprocess(unquote(output))
 
