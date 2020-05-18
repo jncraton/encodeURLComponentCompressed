@@ -32,9 +32,42 @@ function encode(text) {
   return out
 }
 
+function decode(input) {
+  text = ""
+
+  i = 0
+  while (i < input.length) {
+    found = false
+    for (e of encmap) {
+      if (input.substring(i, i+10).startsWith(e[1])) {
+        text += e[0]
+        i += e[1].length
+        found = true
+        break
+      }
+    }
+    
+    if (!found) {
+      text+=input[i]
+      i+=1
+    }
+  }
+  
+  text = decodeURIComponent(text)
+
+  text = text.replace(/(^|[\.\!\?] +|\n)([A-Za-z])/g, (c) => {
+    return c == c.toUpperCase()
+              ? c.toLowerCase()
+              : c.toUpperCase()
+  })
+
+  return text
+}
+
 let test = "Hello, world! Let's make sure sentence casing works properly."
 
 console.log(test)
 console.log(encodeURIComponent(test))
 console.log(encodeURIComponent(test).replace(/%20/g,'+'))
 console.log(encode(test))
+console.log(decode(encode(test)))
