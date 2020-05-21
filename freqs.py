@@ -69,8 +69,6 @@ def gen_js(filename=None):
             out.write(f'["{ngram}","{pc.get_code(i)}"],')
     out.write(']\n')
 
-gen_js()    
-
 def preprocess(text):
     def swap_sentence_case(m):
         return m.group(0).swapcase()
@@ -119,7 +117,6 @@ def encode(text):
             else:
                 output += codecs.encode(quoted[i].encode('utf8'), 'hex').decode('utf8').upper()
                 i += 1
-            #raise ValueError(f"Invalid character {quoted[i:i+10]} position {i}")
 
     print(f'{len(output) / len(text):.2%} the size of plain text')
     print(f'{len(output) / len(quoted):.2%} the size of URL encoded text')
@@ -151,15 +148,12 @@ def decode(text):
         else:
             raise ValueError(f"Invalid character at position {i}")
 
-    #print(ngrams.most_common(100))
-
     return postprocess(unquote(output))
 
 with open('info-theory.txt') as f:
     text = f.read()
     compressed = encode(text)
     decoded = decode(compressed)
-
 
     errors = 0
     for i in range(len(text)):
