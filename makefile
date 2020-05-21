@@ -1,5 +1,4 @@
-all: freqs
+all: bench
 
-freqs: freqs.py ucomp.js
-	python3 freqs.py
-	nodejs ucomp.js
+bench: bench.py
+	python3 bench.py
