@@ -1,6 +1,9 @@
+encodeURLComponentCompressed
+----------------------------
 
+This project provides an alternative to the Javascript encodeURLComponent function. It encoded all bytes in two characters or fewer (URL encoding uses 3 for percent escaped bytes). It also implements a simple prefix coder to more efficiently common Enlish-language text string.
 
-Compression for English-language plain text snippets
+Common English-language strings can be reduced in size by 30-40% compared to plain text, and can be reduced by about 50% compared to the baseline encodeURLComponent function.
 
 Goals
 -----
@@ -9,15 +12,8 @@ Goals
 - Outperform plain text for short English language text snippets
 - Be as fast as possible for both encoding and decoding
 
-Specs
------
-
-- Avoid binary mode operations, as these may not be natively available in all environments and could be challenging or 
-
-The fragment portion of the URL that we are targeting can use the following characters:
-    ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890?/:@-._~!$&'()*+,;=
-
 Word List
+---------
 
 Bauman's revised GSL
 
