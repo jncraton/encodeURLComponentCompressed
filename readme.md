@@ -1,7 +1,7 @@
 encodeURLComponentCompressed
 ----------------------------
 
-This project provides an alternative to the Javascript encodeURLComponent function. It encoded all bytes in two characters or fewer (URL encoding uses 3 for percent escaped bytes). It also implements a simple prefix coder to more efficiently common Enlish-language text string.
+This project provides an alternative to the Javascript encodeURLComponent function. It encoded all bytes in two characters or fewer (URL encoding uses 3 for percent escaped bytes). It also implements a simple prefix coder to more efficiently store common Enlish-language text strings.
 
 Common English-language strings can be reduced in size by 30-40% compared to plain text, and can be reduced by about 50% compared to the baseline encodeURLComponent function.
 
